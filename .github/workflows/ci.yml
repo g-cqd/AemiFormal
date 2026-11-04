@@ -1,0 +1,22 @@
+name: CI
+
+# swift-ci plans and runs the checks from .ci/action.json (https://github.com/g-cqd/swift-ci).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  merge_group:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: g-cqd/swift-ci/.github/workflows/swift-ci.yml@27f96f088df78b2a7c988356107c34e25c3d59d2
+    permissions:
+      contents: write # only used to publish a tag
+    secrets: inherit
