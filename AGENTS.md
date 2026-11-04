@@ -22,6 +22,7 @@ to fire. A new gate is broken on purpose once.
 
 - **The PATH `java` is Android Studio's JBR.** Pin the JVM in any TLC baseline (`/opt/homebrew/opt/openjdk/bin/java` was used for the first one).
 - **TLC prints `x86_64` in its banner on Apple Silicon** while `os.arch` is `aarch64`. A banner quirk, probed.
+- **Check `uptime` before timing anything**: load was 21 to 28 on 8 cores during the first baselines (diary 02).
 - **A small model measures the JVM start-up**, not TLC. Use models that run for tens of seconds at least.
 - **Fingerprint-only runs can be wrong** (ADR-0007). Report the mode and the bound.
 - **AemiJSON HEAD and AemiProtobuf HEAD do not resolve together** (aemi pins differ). Probe with `swift package resolve` before adding either.

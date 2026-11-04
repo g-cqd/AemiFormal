@@ -18,4 +18,5 @@ reassessment note. A tier is not started for its own sake: each has a roadmap en
 
 ## Consequences
 
-Five constraints define "done" (note, section 3). Nothing is excluded for size.
+Nothing is excluded for size. Conformance is defined by invariants because multi-worker TLC is not reproducible byte for byte. The algorithmic tiers
+(inductive checks, IC3, symbolic, symmetry, partial order, abstraction) aim at cost below the state count and are roadmap entries 0030 to 0032.

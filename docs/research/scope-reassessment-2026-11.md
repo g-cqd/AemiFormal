@@ -25,17 +25,36 @@ costly, but the route is not closed: the runtime plus an IR interpreter can **ho
 parts one at a time, each checked against the hosted original (a strangler). The same shape fits the rest: TLAPS delegates its backends first; the
 symbolic checker delegates to z3 first; a Swift SAT/SMT core comes after, with the delegate as its oracle.
 
-## What stays as a constraint on "done" (not a scope exclusion)
+## Definitions and ambitions
 
-1. **Conformance is by invariant, not by bytes.** Java TLC with several workers is itself not reproducible (trace and generated counts vary), so
-   "identical output" has no definition. Contract: same verdict, same distinct-state count and diameter, valid and BFS-minimal counterexamples.
-2. **Unbounded and undecidable inputs end in a typed error with a limit named**, as TLC does for infinite enumeration; no checker decides them.
-3. **State explosion is exponential for every implementation.** The tool's gains are constants (evaluator, layout, memory, parallelism) until the
-   algorithmic tiers (symmetry, VIEW, symbolic) land; claims are measured per tier.
-4. **Implementation correctness is evidenced, not proved**: oracles, differential and property tests, fuzzing, mutation, and proofs about the
-   *algorithms* in TLA+ and Lean. Verifying Swift source itself would need a Swift semantics.
-5. **Java-only surfaces are replaced, not emulated**: TLC's loading of Java `.class` module overrides and RMI distribution have no Swift
-   equivalent; they become a plugin protocol and a transport (ADR-0009).
+**Definition of conformance.** Java TLC with several workers is not reproducible byte for byte (trace and generated counts vary), so "identical
+output" has no meaning to test against. Conformance is: same verdict, same distinct-state count and diameter, and counterexamples that are valid
+behaviours and BFS-minimal. This is a definition, not a limit.
+
+**Unbounded inputs** (infinite enumeration, divergent recursion) end in a typed error naming the limit, as TLC does. Nothing here is a ceiling.
+
+**Linear time is the ambition.** The reachable-state search is already linear in reachable states and transitions, and liveness by SCC is linear in the
+graph. The aim is to make cost grow with something smaller than the state count wherever the problem allows. Each tier is a roadmap entry with its
+own finish line, and none of these is built or measured yet:
+
+| Tier | Idea | Cost then depends on |
+|---|---|---|
+| One-step and inductive checks | An inductive invariant is checked in one step from any state satisfying it, no search | size of one transition, not the state space |
+| k-induction, IC3/PDR | Prove an invariant from bounded unrolling and learned lemmas | size of the proof, not the reachable set |
+| Symbolic (BDD, SAT) | Sets of states as formulas or diagrams | formula size |
+| Symmetry | One canonical representative per orbit | orbits, not states |
+| Partial-order reduction | Explore one interleaving per equivalence class | classes, not interleavings |
+| Abstraction, assume-guarantee | Check components against contracts | components, not their product |
+| Counting and lumping | Merge states that behave alike | classes |
+
+Precedent in the family: AemiRegex ADR-0001 chose linear time by construction. What each tier's complexity is in the worst case I recall
+(model checking is PSPACE-hard for these logics) and have not probed; the point of the tiers is the cases that are not worst cases.
+
+**Correctness: prove as much as can be proved.** Oracles, differential and property tests, fuzzing and mutation are the floor. Above it: proofs
+about each algorithm in TLA+ and Lean (the fingerprint set, the search, SCC, the kernel's rules), and proofs about the Swift where it is
+practical (Lean models of the data structures, then of the code, as far as the tooling reaches). Roadmap 0029.
+
+**Extensions** go through a plugin protocol (ADR-0009). That is the design for user code that TLC loads as Java.
 
 ## Iteration order (vertical slices; each runs end to end and is measured)
 

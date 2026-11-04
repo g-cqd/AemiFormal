@@ -6,4 +6,4 @@ date: 2026-11-04
 
 # 0022 — Lean .olean reader and IR interpreter
 
-Probe first that IR is persisted in `.olean` and how stable the format is (ADR-0008). **Done when** the pinned release's elaborator runs a file and its output equals the real binary's.
+Read `.ir` files (IR lives there, not in `.olean`) and `.olean`; the header and exact-build rule are probed (ADR-0008). Measure the interpreter on the elaborator against upstream's. **Done when** the pinned release's elaborator runs a file and its output equals the real binary's.

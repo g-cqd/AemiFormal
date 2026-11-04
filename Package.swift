@@ -22,7 +22,7 @@ let kernelSettings: [SwiftSetting] = strictSettings + [.strictMemorySafety()]
 let package = Package(
     name: "AemiFormal",
     // The family's floor (docs/adr/0002). Model checking is a server and CI workload, so Linux is built and tested too.
-    platforms: [.macOS(.v15), .iOS(.v18), .tvOS(.v18), .watchOS(.v11), .visionOS(.v2)],
+    platforms: [.macOS(.v26)],
     products: [
         // Source ranges and diagnostics: what every other target reports errors with.
         .library(name: "FormalSupport", targets: ["FormalSupport"])

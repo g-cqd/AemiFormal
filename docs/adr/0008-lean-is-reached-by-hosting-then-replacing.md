@@ -18,5 +18,9 @@ paths, each differential-tested against the hosted original. Version pinned per 
 
 ## Consequences
 
-Early completeness comes from hosting; independence grows with each replacement. Open until probed: that IR is persisted in `.olean` files, the
-format's stability across releases, and interpreter speed against native.
+Early completeness comes from hosting; independence grows with each replacement. Probed 2026-11-04 (diary 2026-11-04-02, Lean 4.35.0):
+- IR is persisted, but in a separate `.ir` file per module (about 381 MB for the whole release); `.olean` keeps only a subset in module mode.
+- The container is versioned and the loader requires an exact version-string and githash match: pin one exact Lean build, as with TLC.
+- Upstream's interpreter ran one compute-bound program about 80 times slower than native (53 s against 0.66 s user CPU). Hosting the elaborator is
+  therefore a means to completeness, and the native replacements in step 3 are where speed comes from.
+- Not probed: the interpreter on the elaborator itself, and the object layout details a Swift reader needs.
