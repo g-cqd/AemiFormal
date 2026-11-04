@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0003]
+phase: tla
+milestone: M1
+target: TLAConfig
+blocked-by: ["0039"]
 date: 2026-11-04
 ---
 

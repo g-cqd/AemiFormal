@@ -1,9 +1,12 @@
 ---
 status: not-started
-blocked-by: [0016]
+phase: tla
+milestone: M4
+target: TLC
+blocked-by: ["0011"]
 date: 2026-11-04
 ---
 
-# 0019 — Symmetry, VIEW and simulation
+# 0019 — Symmetry, VIEW, constraints and simulation
 
-Each with its semantics written first. **Done when** reduced counts are explained against full counts.
+TLC's features of those names, each with its semantics written first. Symmetry is orbit-canonical state bytes. **Done when** reduced counts equal TLC's reduced counts and are explained against full counts.

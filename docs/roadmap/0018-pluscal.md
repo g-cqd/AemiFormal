@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0006]
+phase: tla
+milestone: M4
+target: PlusCal
+blocked-by: ["0006", "0039", "0040"]
 date: 2026-11-04
 ---
 

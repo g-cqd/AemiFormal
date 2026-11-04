@@ -58,6 +58,8 @@ practical (Lean models of the data structures, then of the code, as far as the t
 
 ## Iteration order (vertical slices; each runs end to end and is measured)
 
+Superseded in detail by the milestones M0 to M8 in `docs/roadmap/` (ADR-0011) and `shared-components-2026-11.md`; kept for the reasoning.
+
 1. TLA+ safety checker on a pinned corpus (front end, evaluator, BFS, `.cfg`): the first number against TLC.
 2. Parallel search, fingerprint set, traces, checkpoint/resume.
 3. Liveness, then symmetry, VIEW, simulation.

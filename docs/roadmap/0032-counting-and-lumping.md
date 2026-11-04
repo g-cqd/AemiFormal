@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0031]
+phase: tla
+milestone: M4
+target: TLC
+blocked-by: ["0031"]
 date: 2026-11-04
 ---
 

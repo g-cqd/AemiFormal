@@ -62,8 +62,13 @@ struct DocumentationLayoutTests {
     }
 
     @Test func `a roadmap entry needs a known status and blockers that exist and are not done`() {
-        func entry(_ number: String, _ status: String, _ blockedBy: String = "[]") -> (name: String, text: String) {
-            Self.record("\(number)-work.md", "status: \(status)\nblocked-by: \(blockedBy)")
+        func entry(_ number: String, _ status: String, _ blockedBy: String = "[]", phase: String = "shared") -> (
+            name: String, text: String
+        ) {
+            Self.record(
+                "\(number)-work.md",
+                "status: \(status)\nphase: \(phase)\nmilestone: M1\nblocked-by: \(blockedBy)"
+            )
         }
         #expect(
             DocumentationLayout.roadmapProblems(in: [
@@ -80,6 +85,45 @@ struct DocumentationLayoutTests {
         #expect(
             DocumentationLayout.roadmapProblems(in: [entry("0001", "in-progress"), entry("0002", "done", #"["0001"]"#)])
                 .isEmpty
+        )
+    }
+
+    @Test func `a roadmap entry needs a known phase and no cycle among the entries`() {
+        func entry(_ number: String, _ phase: String, _ blockedBy: String) -> (name: String, text: String) {
+            Self.record(
+                "\(number)-work.md",
+                "status: not-started\nphase: \(phase)\nmilestone: M1\nblocked-by: \(blockedBy)"
+            )
+        }
+        #expect(DocumentationLayout.roadmapProblems(in: [entry("0001", "tla", "[]")]).isEmpty)
+        #expect(DocumentationLayout.roadmapProblems(in: [entry("0001", "misc", "[]")]).count == 1)
+        #expect(
+            DocumentationLayout.roadmapProblems(in: [Self.record("0001-work.md", "status: not-started")]).count >= 1
+        )
+        #expect(
+            DocumentationLayout.roadmapProblems(in: [
+                entry("0001", "tla", #"["0002"]"#), entry("0002", "tla", #"["0001"]"#)
+            ])
+            .count == 1
+        )
+    }
+
+    @Test func `a roadmap entry needs a known milestone and may not come before what blocks it`() {
+        func entry(_ number: String, _ milestone: String, _ blockedBy: String = "[]") -> (name: String, text: String) {
+            Self.record(
+                "\(number)-work.md",
+                "status: not-started\nphase: tla\nmilestone: \(milestone)\nblocked-by: \(blockedBy)"
+            )
+        }
+        #expect(
+            DocumentationLayout.roadmapProblems(in: [entry("0001", "M0"), entry("0002", "M0", #"["0001"]"#)]).isEmpty
+        )
+        #expect(
+            DocumentationLayout.roadmapProblems(in: [entry("0001", "M1"), entry("0002", "M2", #"["0001"]"#)]).isEmpty
+        )
+        #expect(DocumentationLayout.roadmapProblems(in: [entry("0001", "M9")]).count == 1)
+        #expect(
+            DocumentationLayout.roadmapProblems(in: [entry("0001", "M3"), entry("0002", "M2", #"["0001"]"#)]).count == 1
         )
     }
 

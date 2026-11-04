@@ -122,6 +122,27 @@ enum DocumentationLayout {
                     problems.append("\(entry.name): still blocked by \(blocker), which is done")
                 }
             }
+            let milestone = RoadmapGraph.milestones.firstIndex(of: fields["milestone", default: ""])
+            if milestone == nil {
+                problems.append("\(entry.name): milestone is \(fields["milestone"] ?? "missing"), not one of M0 to M8")
+            }
+            for blocker in numbers(in: fields["blocked-by", default: ""]) {
+                let blockerMilestone = RoadmapGraph.milestones.firstIndex(
+                    of: fieldsByNumber[blocker]?["milestone"] ?? ""
+                )
+                if let milestone, let blockerMilestone, blockerMilestone > milestone {
+                    problems.append("\(entry.name): comes in an earlier milestone than \(blocker), which blocks it")
+                }
+            }
+            if !RoadmapGraph.phases.contains(fields["phase", default: ""]) {
+                problems.append(
+                    "\(entry.name): phase is \(fields["phase"] ?? "missing"), not one of \(RoadmapGraph.phases.sorted())"
+                )
+            }
+        }
+        let blockers = fieldsByNumber.mapValues { numbers(in: $0["blocked-by", default: ""]) }
+        for cycle in RoadmapGraph.cycles(in: blockers) {
+            problems.append("roadmap cycle: \(cycle.joined(separator: " waits on "))")
         }
         return problems
     }

@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0022]
+phase: lean
+milestone: M6
+target: LeanHost
+blocked-by: ["0045"]
 date: 2026-11-04
 ---
 

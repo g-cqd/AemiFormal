@@ -22,6 +22,7 @@ to fire. A new gate is broken on purpose once.
 
 - **The PATH `java` is Android Studio's JBR.** Pin the JVM in any TLC baseline (`/opt/homebrew/opt/openjdk/bin/java` was used for the first one).
 - **TLC prints `x86_64` in its banner on Apple Silicon** while `os.arch` is `aarch64`. A banner quirk, probed.
+- **A roadmap entry needs `phase`, `milestone` and `blocked-by`**; the gate rejects cycles and an entry earlier than its blocker.
 - **Check `uptime` before timing anything**: load was 21 to 28 on 8 cores during the first baselines (diary 02).
 - **A small model measures the JVM start-up**, not TLC. Use models that run for tens of seconds at least.
 - **Fingerprint-only runs can be wrong** (ADR-0007). Report the mode and the bound.
@@ -38,4 +39,6 @@ Atomic and buildable; the message states why. Never mix a refactor and a behavio
 
 ## Current state
 
-`FormalSupport` only. Next claimable entries: 0002 (baseline corpus and harness), 0003 (semantics), 0020 and 0021 (Lean, independent of the TLA+ line).
+`FormalSupport` only. The roadmap has 46 entries in milestones M0 to M8; ready now: 0033 limits, 0034 source map, 0035 graph kernels, 0036 big integers,
+0037 128-bit hash, 0038 term store (spike), 0043 oracle runner. The Lean kernel checker (0020) is two steps from ready and independent of the TLA+ line.
+Roadmap numbers are never reused. Layers and the sharing rule: ADR-0011; what is shared and why: `docs/research/shared-components-2026-11.md`.

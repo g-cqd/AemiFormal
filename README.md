@@ -10,6 +10,6 @@ The measured starting point is the Java TLC 1.7.4 baseline in `docs/diary/2026-1
 swift test -c release --enable-testable-imports
 ```
 
-Read `docs/WHITE-PAPER.md`, then `docs/research/scope-reassessment-2026-11.md`. Work is in `docs/roadmap/`.
+Read `docs/WHITE-PAPER.md`, then `docs/research/scope-reassessment-2026-11.md` and `docs/research/shared-components-2026-11.md`. Work is in `docs/roadmap/` (46 entries, milestones M0 to M8).
 
 [MIT](LICENSE)

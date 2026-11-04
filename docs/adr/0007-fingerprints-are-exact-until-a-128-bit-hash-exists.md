@@ -13,7 +13,7 @@ for 64 bits, n = 10^9 gives about 0.027 and n = 10^10 about 2.7 (arithmetic, not
 
 ## Decision
 
-Modes: exact (canonical state bytes kept), 128-bit, and 64-bit. Until Aemi has a 128-bit hash (roadmap 0007), the default is exact and 64-bit needs an
+Modes: exact (canonical state bytes kept), 128-bit, and 64-bit. Until Aemi has a 128-bit hash (roadmap 0037), the default is exact and 64-bit needs an
 explicit option. Every report names the mode, and a fingerprint run prints its collision bound from the actual state count.
 
 ## Consequences

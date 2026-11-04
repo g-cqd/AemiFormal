@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0012 0016 0020]
+phase: proof
+milestone: M7
+target: docs/proofs
+blocked-by: ["0012", "0016", "0020"]
 date: 2026-11-04
 ---
 

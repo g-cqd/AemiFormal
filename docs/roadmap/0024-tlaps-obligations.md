@@ -1,6 +1,9 @@
 ---
 status: not-started
-blocked-by: [0006]
+phase: proof
+milestone: M7
+target: TLAPS
+blocked-by: ["0006", "0043", "0040"]
 date: 2026-11-04
 ---
 

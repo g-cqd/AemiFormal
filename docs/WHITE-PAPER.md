@@ -54,10 +54,12 @@ Three kept apart: the written semantics, a naive in-repository reference evaluat
 contract with TLC: same verdict; same distinct-state count and diameter under identical semantics; a counterexample that is a valid
 behaviour (minimal length in BFS); generated counts compared and any difference explained, not forced.
 
-## Dependencies
+## Dependencies and sharing
 
-Aemi supplies the kernels, at one pinned revision (ADR-0005); nothing else without an ADR that compares the alternatives. A
-generic piece found here belongs in Aemi, with its tests, red first.
+Aemi supplies the kernels, at one pinned revision (ADR-0005); nothing else without an ADR that compares the alternatives. Reuse before writing: an
+Aemi piece is used as it is, and a kernel is written here only for a recorded gap. A piece is shared when two consumers need it, otherwise it stays in
+its engine (ADR-0011). Targets sit in three layers and import only downward. A generic piece found here belongs in Aemi, with its tests, red first;
+the owner moves it, because that changes another repository.
 
 ## Documentation law
 
