@@ -26,7 +26,7 @@ to fire. A new gate is broken on purpose once.
 - **Check `uptime` before timing anything**: load was 21 to 28 on 8 cores during the first baselines (diary 02).
 - **A small model measures the JVM start-up**, not TLC. Use models that run for tens of seconds at least.
 - **Fingerprint-only runs can be wrong** (ADR-0007). Report the mode and the bound.
-- **AemiJSON HEAD and AemiProtobuf HEAD do not resolve together** (aemi pins differ). Probe with `swift package resolve` before adding either.
+- **Name an aemi revision by its full 40-hex hash.** SwiftPM counts `e30aad8` and `e30aad82377c…` as two requirements and refuses the graph (probed 2026-11-06). The family moves together (aemi ADR 0030); probe with `swift package resolve` at the current heads before adding a dependency.
 - **Another writer may share the working tree.** Check `git status`; do not `git add -A` under changes you did not make.
 
 ## Dependencies

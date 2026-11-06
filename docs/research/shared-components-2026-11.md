@@ -14,9 +14,10 @@ file format. The first ecosystem search timed out on its last patterns and was r
 | Need | Piece | Fit | Evidence |
 |---|---|---|---|
 | Bytes, varints, checked arithmetic, tape slots | `AemiKernel` (`Varint` with zigzag, `CheckedMath`, `ByteReader`, `TapeSlot`: 4-bit tag, 28-bit aux, 32-bit offset) | as is; tape offsets cap at 4 GiB, fine for sources, not for term stores | [read] |
-| Hashing | `WyHash`, `XXH64`: 64-bit, seedable. `WyHash` documents that it does not defend against crafted keys | 128-bit and keyed fingerprints are a gap (0037) | [read] |
+| Hashing | `WyHash`, `XXH64`: 64-bit, seedable. `WyHash` documents that it does not defend against crafted keys. At `e30aad8`: `KeyedHash`, SipHash-1-3 with a 128-bit key (random per process, or set for reproducible tables), 64-bit output | keyed is covered; 128-bit output is the gap (0037). A fingerprint set that is resumed needs the key kept in the checkpoint | [read] |
+| Hash table over caller-held keys | At `e30aad8`: `HashIndex`, open addressing, `Int32` values beside the full 64-bit hash, growth from stored hashes, the hash is the caller's | the shape of an interning table for terms (0038); `Int32` capacity to be checked against Lean-sized inputs | [read], builds and works [probed] |
 | Integrity | `AemiKernels.crc32c` (hardware), `AemiDigest` SHA-256 | as is | [read] |
-| Names | `AemiInterner`: `Symbol` is `UInt32`, one writer, `freeze()`, `merge(workers:)` with symbol remaps, `serialized()` | as is for identifiers and strings; parallel interning by many writers is a gap | [read], merge [probed] |
+| Names | `AemiInterner`: `Symbol` is `UInt32`, one writer, `freeze()`, `merge(workers:)` with symbol remaps, `serialized()`. Single writer with a deterministic sharded merge is a measured choice (aemi ADR 0019: lock-striped tables were slower and numbered keys in thread order) | as is for identifiers and strings; state identity must come from content bytes, never from symbol numbers; how a search worker interns mid-run is a question for the owner, not a gap | [read], merge [probed] |
 | Atomics on raw memory | `SharedAtomicU64` (load-acquire, store-release, `compareExchangeAcqRel`) | core of a lock-free table | [read] |
 | Concurrent set | none; built on the atomics: 8 threads offered 2,000,000 keys 16,000,000 times and the table counted 2,000,000 insertions | the protocol works; resize, disk and speed are open (0042, 0012) | [probed] |
 | Files | `AemiIO`: `RawFileMap` is **read-only** (`PROT_READ`), `AtomicFile.replace`, `DurabilityProfile` | reading `.olean`/`.ir` fits; a writable growable mapping is a gap (0041) | [read] |
@@ -30,16 +31,16 @@ file format. The first ecosystem search timed out on its last patterns and was r
 | TLC pin and verdicts | `swift-ci` `TLC`: version, SHA-256, model discovery with must-fail by name, verdict from output | one source for the pin (0043) | [read] |
 | Emitting TLA+ | `modeler` `TLAModule` builds text by hand (340 lines) | a consumer of the printer and syntax kits later | [read] |
 | Iterative SCC | `arcleak` `StronglyConnectedComponents`: iterative Tarjan over `[[Int]]`, 63 lines, internal | the shape ADR-0003 needs; storage is too narrow for TLC (0035) | [read] |
-| Union-find | `dolly` and `SwiftStaticAnalysis`: the same private `UnionFind`, `find` recursive | duplicated, and recursive (bounded by rank, so not a bug, but it would fail our gate) | [read] |
-| Arenas | `SwiftStaticAnalysis` `Arena` (public, `~Copyable`); `AemiInterner`'s chunked arena (internal) | model for the term store (0038) | [read] |
+| Union-find | `dolly`: a private `UnionFind` whose `find` is recursive (bounded by rank, so not a bug, but it would fail our gate). `SwiftStaticAnalysis`, where I first found a second copy, is no longer in the checkout | one remaining copy | [read] |
+| Arenas | `AemiInterner`'s chunked arena (internal), `HashIndex` for offsets into a caller's arena | model for the term store (0038) | [read] |
 
 **Not found anywhere in the ecosystem** (name-based search; a differently named implementation would be missed): big integers, SAT/BDD, work-stealing queues,
 e-graphs or congruence closure, persistent maps.
 
 ## Platform facts [probed]
 
-`aemi` at `4879ca7522a6` with `AemiJSON` at `61a8b82` resolves, and `AemiKernel`, `AemiKernels`, `AemiInterner`, `AemiIO`, `AemiRuntime`, `AemiMetrics`,
-`AemiDigest`, `AemiJSONRPC` build together, with `AemiTestKit` in tests, under `platforms: [.macOS(.v26)]` (ADR-0005). `UInt128` is native and 16-byte
+`aemi` `e30aad82` with `AemiJSON` `aec8895`, `AemiProtobuf` `4492e96` and `AemiRegex` `e07516d` resolve together, and `AemiKernel`, `AemiInterner`, `AemiJSONRPC`, `AemiProtobuf`,
+`AemiRegex` build, with `AemiTestKit` in tests, under `platforms: [.macOS(.v26)]` (ADR-0005, re-probed 2026-11-06; the first survey, 2026-11-04, was at `4879ca7`, where `AemiKernel` `KeyedHash` and `HashIndex` did not yet exist). `UInt128` is native and 16-byte
 aligned. Python 3.15 and Homebrew GMP are installed (big-integer oracles); `z3` is installed; `cadical` ships in the Lean toolchain; Lean also bundles
 `leanchecker`, `lean4lean`, `leanexport` and `nanoda_bin`. SANY exports a semantic tree: `XMLExporter -o` on one module gave 736 located nodes, levels 0 to 3
 and resolved references (without `-o` it failed XML validation under JDK 27).
@@ -62,7 +63,7 @@ and resolved references (without `-o` it failed XML validation under JDK 27).
 | Parallel kernel (0042) | | ● | ● | | | ● | ● | ● | |
 | Oracle runner (0043) | ● | ● | ● | ● | ● | ● | ● | ● | |
 
-The graph kernels have three external users already (`arcleak`, `dolly`, `SwiftStaticAnalysis`), which is why they are layer 0 and a candidate for aemi.
+The graph kernels have one existing user for each half (`arcleak`'s SCC, `dolly`'s union-find) beside three roadmap entries (0006, 0016, 0020), which is why they are layer 0 and a candidate for aemi.
 
 ## Structure of the roadmap
 
@@ -98,6 +99,6 @@ The refinement changed these things, each because a check or a probe showed the 
 
 ## Follow-ups for the owner (other repositories, not changed here)
 
-- `dolly` and `SwiftStaticAnalysis` carry the same recursive `UnionFind`; `arcleak` has an iterative SCC. A shared kernel in aemi would replace all three.
-- `AemiProtobuf`'s `aemi` pin differs from `AemiJSON`'s, so the two do not resolve together.
+- `dolly` carries a recursive `UnionFind` and `arcleak` an iterative SCC over `[[Int]]`. A shared kernel in aemi would replace both.
+- The pin conflict between AemiProtobuf and AemiJSON found on 2026-11-04 is cleared by the family's repin (re-probed 2026-11-06). The report for the aemi owner is `aemi-upstream-report-2026-11.md`.
 - `AemiLexers.Language` could take TLA+ and Lean.

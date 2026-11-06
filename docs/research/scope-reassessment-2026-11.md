@@ -71,6 +71,9 @@ Superseded in detail by the milestones M0 to M8 in `docs/roadmap/` (ADR-0011) an
 
 ## Follow-ups found on the way (not fixed here)
 
+**Resolved 2026-11-06:** the pin conflict below was cleared by the family's repin; at the heads of that day AemiJSON, AemiProtobuf and AemiRegex resolve together (ADR-0005).
+
+
 - `AemiJSON` HEAD (aemi `4879ca7`) and `AemiProtobuf` HEAD (aemi `b31f499` through AemiJSON `33f4959`) **do not resolve together**: probed with
   `swift package resolve` ("aemi is required using two different revision-based requirements"). `modeler` pins the older pair. AemiFormal needs
   AemiJSON and AemiProtobuf together, so AemiProtobuf's pins need a bump first.

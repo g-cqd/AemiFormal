@@ -16,7 +16,9 @@ revisions in a graph (aemi ADR-0030). AemiProtobuf's manifest was observed pinni
 
 ## Evidence
 
-Probed 2026-11-04 in a throwaway package with `platforms: [.macOS(.v26)]`: `aemi` at `4879ca7522a6` and `AemiJSON` at `61a8b82` resolve together, and a target importing `AemiKernel`, `AemiKernels`, `AemiInterner`, `AemiIO`, `AemiRuntime`, `AemiMetrics`, `AemiDigest` and `AemiJSONRPC` builds, with `AemiTestKit` in its test target. Pairing AemiJSON `61a8b82` with AemiProtobuf `4e7756e` does not resolve (two `aemi` revisions).
+Probed 2026-11-06 in a throwaway package with `platforms: [.macOS(.v26)]`: `aemi` `e30aad82377cbea62171cc722a88041e97021db2`, `AemiJSON` `aec8895f1bc9`, `AemiProtobuf` `4492e961a533` and `AemiRegex` `e07516ddd7ea` (the heads of all four on that day) resolve together, and a target importing `AemiKernel`, `AemiInterner`, `AemiJSONRPC`, `AemiProtobuf` and `AemiRegex` builds, with `AemiTestKit` in its test target.
+
+On 2026-11-04 the same probe at `AemiJSON` `61a8b82` with `AemiProtobuf` `4e7756e` failed (two `aemi` revisions, `4879ca7` and `b31f499`); the family's repin since then (aemi ADR 0030) cleared it. SwiftPM also treats an abbreviated and a full hash of one commit as two requirements, so every pin here is a full 40-hex hash.
 
 ## Consequences
 
